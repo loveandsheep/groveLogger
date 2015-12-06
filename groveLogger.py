@@ -1,7 +1,7 @@
-import serial, time
-import math
-import RPI.GPIO as GPIO
-import struct
-import sys
+import logWriter
 
-print "test"
+log = logWriter.logWriter()
+
+log.load()
+log.makeLog()
+log.save()
