@@ -1,23 +1,42 @@
+# -*- coding: utf-8 -*-
+
+import groveGetter
+import os
+import datetime
+import locale
 import json
 
 class logWriter:
+	getter = groveGetter.groveGetter()
 	jsonDict = {}
 	lastLog = {}
 
+	def initialize(self):
+		getter.init()
+
 	def makeLog(self):
-		self.lastLog["Temperature"] = 27.0
-		self.lastLog["Pressure"] = 1024.0
+		getter.reflesh()
+		d = datetime.datetime.today()
+		self.lastLog["Temperature"] = getter.dataDict["temp"]
+		self.lastLog["Pressure"] = getter.dataDict["pressure"]
 		self.lastLog["Altitude"] = 45.0
-		self.jsonDict["log_14:00"] = self.lastLog
+		self.jsonDict["log_"+d.strftime("%H:%M:%S")] = self.lastLog
 
 	def load(self):
-		today = "gLog_20151201.json"
+		d = datetime.datetime.today()
+		today =	"gLog_" + d.strftime("%Y%m%d") + ".json"
 
-		with open(today, 'r') as f:
+		base = os.path.dirname(os.path.abspath(__file__))
+		path = os.path.normpath(os.path.join(base, './logs/'+today))
+		with open(path, 'r') as f:
 			self.jsonDict = json.load(f)
 	
 	def save(self):
-		today = "gLog_20151201.json"
+		d = datetime.datetime.today()
+		today =	"gLog_" + d.strftime("%Y%m%d") + ".json"
 
-		with open(today, 'w') as f:
+		base = os.path.dirname(os.path.abspath(__file__))
+		path = os.path.normpath(os.path.join(base, './logs/'+today))
+		
+		with open(path, 'w') as f:
 			json.dump(self.jsonDict, f, sort_keys=True, indent=4)
