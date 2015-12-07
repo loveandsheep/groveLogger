@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import time
 import logWriter
 
 log = logWriter.logWriter()
@@ -8,6 +8,6 @@ log.init()
 log.load()
 
 while True:
-	time.sleep(10)
 	log.makeLog()
 	log.save()
+	time.sleep(10)

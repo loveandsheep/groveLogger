@@ -18,6 +18,11 @@ class groveGetter:
 	ser = None
 	inp=[]
 	GGA=[]
+
+	def decimal_degrees(self, raw_degrees):
+		degrees = float(raw_degrees) // 100
+		d = float(raw_degrees) % 100 / 60
+		return degrees + d
 	
 	def initialize(self):
 		grovepi.pinMode(pins_bright,"INPUT")
@@ -37,29 +42,41 @@ class groveGetter:
 		self.dataDict["brightness"] = grovepi.analogRead(pins_bright)
 		self.dataDict["temp"] = temp
 		self.dataDict["humid"] = humidity
-		self.dataDict["pressure"] = pressure
+		self.dataDict["pressure"] = pressure / 100.0
 
 		#GPS
 		while True:
 			self.inp = self.ser.readline()
-			if self.inp[:6] == '$GPGGA'
+			if self.inp[:6] == '$GPGGA':
 				break
 			time.sleep(0.1)
 		try:
-			ind=self.inp.index('$GPGGA', 5, len(GPS.inp))
+			ind=self.inp.index('$GPGGA', 5, len(self.inp))
 			self.inp = self.inp[ind:]
-		expect ValueError:
+		except ValueError:
+			print "Value error"
 
-		self.GGA=self.inp.split(",")
-		[t,fix,sats,alt,lat,lat_ns,long,long_ew] = self.GGA.vals()
-
-		lat = g.decimal_degrees(float(lat))
-		if lat_ns == "S":
-			lat = -lat
-
-		long = g.decimal_degrees(float(long))
-		if long_ew == "W"
-			long = -long
+		self.GGA = self.inp.split(",")
+		t = self.GGA[1]
+		lat = self.GGA[2]
+		lat_ns = self.GGA[3]
+		long = self.GGA[4]
+		long_ew = self.GGA[5]
+		fix = self.GGA[6]
+		sats = self.GGA[7]
+		alt = self.GGA[9]
+		
+		if lat.replace(".","",1).isdigit():
+			lat = self.decimal_degrees(float(lat))
+			#lat = lat / 100.0
+			if lat_ns == "S":
+				lat = -lat
+		
+		if long.replace(".","",1).isdigit():
+			long = self.decimal_degrees(float(long))
+			#long = long / 100.0
+			if long_ew == "W":
+				long = -long
 
 		self.dataDict["Latitude"] = lat
 		self.dataDict["Longtitude"] = long
