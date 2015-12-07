@@ -4,6 +4,7 @@ import logWriter
 
 log = logWriter.logWriter()
 
-log.load()
+log.init()
+#log.load()
 log.makeLog()
 log.save()

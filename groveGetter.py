@@ -16,18 +16,18 @@ class groveGetter:
 	
 	def initialize(self):
 		grovepi.pinMode(pins_bright,"INPUT")
-		bmp = BMP085(0x77, 1)
+		self.bmp = BMP085(0x77, 1)
 		rev = GPIO.RPI_REVISION
-			if rev == 2 or rev == 3:
-				bus = smbus.SMBus(1)
-			else:
-				bus = smbus.SMBus(0)
+		if rev == 2 or rev == 3:
+			bus = smbus.SMBus(1)
+		else:
+			bus = smbus.SMBus(0)
 
 	def reflesh(self):
 		[temp,humidity] = grovepi.dht(pins_dht,1)
-		pressure = bmp.readPressure()
+		pressure = self.bmp.readPressure()
 		
-		dataDict["brightness"] = grovepi.analogRead(pins_bright)
-		dataDict["temp"] = temp
-		dataDict["humid"] = humidity
-		dataDict["pressure"] = pressure
+		self.dataDict["brightness"] = grovepi.analogRead(pins_bright)
+		self.dataDict["temp"] = temp
+		self.dataDict["humid"] = humidity
+		self.dataDict["pressure"] = pressure

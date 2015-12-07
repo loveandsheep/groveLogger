@@ -11,14 +11,15 @@ class logWriter:
 	jsonDict = {}
 	lastLog = {}
 
-	def initialize(self):
-		getter.init()
+	def init(self):
+		self.getter.initialize()
 
 	def makeLog(self):
-		getter.reflesh()
+		self.getter.reflesh()
 		d = datetime.datetime.today()
-		self.lastLog["Temperature"] = getter.dataDict["temp"]
-		self.lastLog["Pressure"] = getter.dataDict["pressure"]
+		self.lastLog["Brightness"] = self.getter.dataDict["brightness"]
+		self.lastLog["Temperature"] = self.getter.dataDict["temp"]
+		self.lastLog["Pressure"] = self.getter.dataDict["pressure"]
 		self.lastLog["Altitude"] = 45.0
 		self.jsonDict["log_"+d.strftime("%H:%M:%S")] = self.lastLog
 
