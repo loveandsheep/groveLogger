@@ -5,6 +5,7 @@ import os
 import datetime
 import locale
 import json
+import requests
 
 class logWriter:
 	getter = groveGetter.groveGetter()
@@ -28,13 +29,13 @@ class logWriter:
 
 		self.jsonDict["log_"+d.strftime("%H:%M:%S")] = self.lastLog
 		print "=== Log ===" + d.strftime("%H:%M:%S")
-		print "Brightness :" + str(self.lastLog["Brightness"])
-		print "Temperature:" + str(self.lastLog["Temperature"])
-		print "Humidity   :" + str(self.lastLog["Humidity"])
-		print "Pressure   :" + str(self.lastLog["Pressure"])
-		print "Latitude   :" + str(self.lastLog["Latitude"])
-		print "Longtitude :" + str(self.lastLog["Longtitude"])
-		print "Altitude   :" + str(self.lastLog["Altitude"])
+		print "Brightness :" + str(self.lastLog["p_brightness"])
+		print "Temperature:" + str(self.lastLog["p_temperature"])
+		print "Humidity   :" + str(self.lastLog["p_humidity"])
+		print "Pressure   :" + str(self.lastLog["p_pressure"])
+		print "Latitude   :" + str(self.lastLog["p_lat"])
+		print "Longtitude :" + str(self.lastLog["p_lon"])
+		print "Altitude   :" + str(self.lastLog["p_alt"])
 
 	def load(self):
 		d = datetime.datetime.today()
@@ -55,6 +56,12 @@ class logWriter:
 		
 		with open(path, 'w') as f:
 			json.dump(self.jsonDict, f, sort_keys=True, indent=4)
+
+	def post(self):
+		try:
+			requests.post('http://127.0.0.1:51966/sensor', json.dumps(self.jsonDict))
+		except requests.exceptions.ConnectionError:
+			print "POST Request connection error"
 
 	def export(self):
 		d = datetime.datetime.today()

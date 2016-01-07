@@ -39,46 +39,64 @@ class groveGetter:
 		[temp,humidity] = grovepi.dht(pins_dht,1)
 		pressure = self.bmp.readPressure()
 		
-		self.dataDict["brightness"] = grovepi.analogRead(pins_bright)
+		self.dataDict["brightness"] = 0
+		self.dataDict["temp"] = 0
+		self.dataDict["humid"] = 0
+		self.dataDict["pressure"] = 0
+		try:
+			self.dataDict["brightness"] = grovepi.analogRead(pins_bright)
+
+		except IOError:
+			print ("analog Error")
+
 		self.dataDict["temp"] = temp
 		self.dataDict["humid"] = humidity
 		self.dataDict["pressure"] = pressure / 100.0
 
 		#GPS
-		while True:
+		cnt = 0
+		gpsSuccess = False
+		print "start GPS..."
+		while (cnt < 30):
 			self.inp = self.ser.readline()
 			if self.inp[:6] == '$GPGGA':
+				gpsSuccess = True
 				break
 			time.sleep(0.1)
+			cnt = cnt + 1
 		try:
 			ind=self.inp.index('$GPGGA', 5, len(self.inp))
 			self.inp = self.inp[ind:]
 		except ValueError:
 			print "Value error"
-
-		self.GGA = self.inp.split(",")
-		t = self.GGA[1]
-		lat = self.GGA[2]
-		lat_ns = self.GGA[3]
-		long = self.GGA[4]
-		long_ew = self.GGA[5]
-		fix = self.GGA[6]
-		sats = self.GGA[7]
-		alt = self.GGA[9]
 		
-		if lat.replace(".","",1).isdigit():
-			lat = self.decimal_degrees(float(lat))
-			#lat = lat / 100.0
-			if lat_ns == "S":
-				lat = -lat
+		self.dataDict["Altitude"] = 0
+		self.dataDict["Latitude"] = 0
+		self.dataDict["Longtitude"] = 0
+
+		if gpsSuccess:
+			self.GGA = self.inp.split(",")
+			t = self.GGA[1]
+			lat = self.GGA[2]
+			lat_ns = self.GGA[3]
+			long = self.GGA[4]
+			long_ew = self.GGA[5]
+			fix = self.GGA[6]
+			sats = self.GGA[7]
+			alt = self.GGA[9]
 		
-		if long.replace(".","",1).isdigit():
-			long = self.decimal_degrees(float(long))
-			#long = long / 100.0
-			if long_ew == "W":
-				long = -long
+			if lat.replace(".","",1).isdigit():
+				lat = self.decimal_degrees(float(lat))
+				#lat = lat / 100.0
+				if lat_ns == "S":
+					lat = -lat
+		
+			if long.replace(".","",1).isdigit():
+				long = self.decimal_degrees(float(long))
+				#long = long / 100.0
+				if long_ew == "W":
+					long = -long
 
-		self.dataDict["Altitude"] = alt
-		self.dataDict["Latitude"] = lat
-		self.dataDict["Longtitude"] = long
-
+			self.dataDict["Altitude"] = alt
+			self.dataDict["Latitude"] = lat
+			self.dataDict["Longtitude"] = long

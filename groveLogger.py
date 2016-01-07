@@ -10,5 +10,5 @@ log.load()
 while True:
 	log.makeLog()
 	log.save()
-	log.export()
+	log.post()
 	time.sleep(10)
