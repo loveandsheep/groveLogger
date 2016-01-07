@@ -78,6 +78,7 @@ class groveGetter:
 			if long_ew == "W":
 				long = -long
 
+		self.dataDict["Altitude"] = alt
 		self.dataDict["Latitude"] = lat
 		self.dataDict["Longtitude"] = long
 

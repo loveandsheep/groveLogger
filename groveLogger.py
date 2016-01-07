@@ -10,4 +10,5 @@ log.load()
 while True:
 	log.makeLog()
 	log.save()
+	log.export()
 	time.sleep(10)
